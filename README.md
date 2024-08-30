@@ -4,7 +4,7 @@
 
 **Install modul**
 ```
-pip install selenium request python-dotenv webdriver-manager
+pip install selenium requests python-dotenv webdriver-manager
 ```
 
 **Download chrome driver**
