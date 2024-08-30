@@ -1,0 +1,4 @@
+.env
+chromedriver-win64.zip
+chromedriver.exe
+.vscode/
