@@ -9,10 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import requests
 from dotenv import load_dotenv
 
-# Memuat variabel dari file .env
 load_dotenv()
 
-# Mengambil variabel dari .env
 NIM = os.getenv('NIM')
 PASSWORD = os.getenv('PASSWORD')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -21,12 +19,11 @@ TELEGRAM_URL = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
 JSON_FILE = 'announcements.json'
 MAX = int(os.getenv('MAX'))
 
-# Path ke chromedriver
 driver_service = Service('chromedriver.exe')  # Ganti dengan path yang benar
+
 options = Options()
 options.headless = True  # Set ke True untuk mode headless
 
-# Inisialisasi WebDriver
 driver = webdriver.Chrome(service=driver_service, options=options)
 
 def read_announcements():
@@ -62,7 +59,7 @@ try:
     # Buka halaman login
     driver.get('https://inspire.unsrat.ac.id/')
 
-    # Mengisi username dan password
+    # Isi username dan password
     print("Input username dan password...")
     driver.find_element(By.NAME, 'username').send_keys(NIM)
     driver.find_element(By.NAME, 'password').send_keys(PASSWORD)
@@ -74,12 +71,10 @@ try:
     print("Mengakses halaman pengumuman...")
     driver.get('https://inspire.unsrat.ac.id/pengumuman/pengumuman/list')
 
-    # Tunggu hingga navigasi selesai dan halaman pengumuman tersedia
     WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, '.product-info'))
     )
 
-    # Tunggu hingga elemen dengan kelas 'product-info' tersedia
     WebDriverWait(driver, 60).until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.product-info'))
     )
@@ -97,19 +92,19 @@ try:
     next_id = get_next_id(existing_announcements)
     
     for announcement in announcements:
-        # Ambil elemen <a> dan URL-nya
+        # Ambil url dari <a>
         link_element = announcement.find_element(By.CSS_SELECTOR, 'a.product-title')
         url = link_element.get_attribute('href')
         
-        # Ambil judul pengumuman
+        # Ambil judul
         title_element = link_element.find_element(By.CSS_SELECTOR, 'h4')
         title = title_element.text if title_element else 'No title'
         
-        # Ambil waktu pengumuman
+        # Ambil waktu
         time_element = announcement.find_element(By.CSS_SELECTOR, 'span.badge-info')
         time = time_element.text if time_element else 'No time'
         
-        # Ambil deskripsi pengumuman
+        # Ambil deskripsi
         description_element = announcement.find_element(By.CSS_SELECTOR, 'span.product-description')
         description = description_element.text.strip() if description_element else 'No description'
         
@@ -152,5 +147,5 @@ try:
         print("Tidak ada pengumuman baru.")
 
 finally:
-    # Menutup browser
+    
     driver.quit()
