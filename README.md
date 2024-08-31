@@ -20,3 +20,11 @@ Buat bot telegram [di sini](https://t.me/BotFather) dan salin bot token. Kirim p
 Update nilai variabel pada file [.env-temp](.env-temp), lalu rename file menjadi `.env`. Untuk `CHAT_ID` anda bisa didapat dari [bot telegram ini](https://t.me/chatIDrobot).
 
 ---
+
+### Run
+
+```
+python app.py
+```
+
+Untuk file `access2.py` terdapat looping dengan interval (tidak disarankan)
