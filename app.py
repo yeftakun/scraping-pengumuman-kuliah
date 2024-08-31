@@ -1,30 +1,35 @@
-import os
-import json
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import requests
+import os
 from dotenv import load_dotenv
+import json
+import requests
 
+# Load environment variables NIM and password
 load_dotenv()
 
 NIM = os.getenv('NIM')
-PASSWORD = os.getenv('PASSWORD')
+PASSWORD = os.getenv('PASS')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 TELEGRAM_URL = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
 JSON_FILE = 'announcements.json'
 MAX = int(os.getenv('MAX'))
 
-driver_service = Service('chromedriver.exe')  # Ganti dengan path yang benar
+first_run = True
+reload = True
 
+# Configure options
 options = Options()
-options.headless = True  # Set ke True untuk mode headless
+options.add_argument("--headless")
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
-driver = webdriver.Chrome(service=driver_service, options=options)
+# Initialize the WebDriver
+driver = webdriver.Chrome(options=options)
 
 def read_announcements():
     """Membaca pengumuman dari file JSON."""
@@ -55,21 +60,23 @@ def check_and_clean_data(announcements):
         return []  # Menghapus semua data jika sudah mencapai 50
     return announcements
 
+# Open the login page
+login_url = "https://inspire.unsrat.ac.id"
+redirect_url = "https://inspire.unsrat.ac.id/pengumuman/pengumuman/list"
+
 try:
-    # Buka halaman login
-    driver.get('https://inspire.unsrat.ac.id/')
-
-    # Isi username dan password
-    print("Input username dan password...")
-    driver.find_element(By.NAME, 'username').send_keys(NIM)
-    driver.find_element(By.NAME, 'password').send_keys(PASSWORD)
-
-    # Klik tombol login
-    login_button = driver.find_element(By.CSS_SELECTOR, '.btn.btn-danger.btn-round.btn-lg.btn-block')
+    driver.get(login_url)
+    # Fill in the login form
+    username_field = driver.find_element(By.NAME, "username")
+    password_field = driver.find_element(By.NAME, "password")
+    login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
+    print('Memasukan username dan password')
+    username_field.send_keys(NIM)
+    password_field.send_keys(PASSWORD)
+    print('Login...')
     login_button.click()
-
-    print("Mengakses halaman pengumuman...")
-    driver.get('https://inspire.unsrat.ac.id/pengumuman/pengumuman/list')
+    print('Mengakses halaman pengumuman')
+    driver.get(redirect_url)
 
     WebDriverWait(driver, 60).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, '.product-info'))
@@ -82,7 +89,7 @@ try:
     # Ambil data pengumuman
     print("Mengambil data pengumuman...")
     announcements = driver.find_elements(By.CSS_SELECTOR, '.product-info')
-    
+
     # Membaca pengumuman yang sudah ada dari file JSON
     existing_announcements = read_announcements()
     existing_announcements = check_and_clean_data(existing_announcements)  # Memeriksa dan membersihkan data jika perlu
@@ -145,7 +152,19 @@ try:
             print(f"Terjadi kesalahan saat mengirim pesan: {response.status_code}")
     else:
         print("Tidak ada pengumuman baru.")
-
 finally:
-    
     driver.quit()
+
+
+
+
+# Wait for redirection to the desired page
+# try:
+#     WebDriverWait(driver, 10).until(EC.url_to_be(redirect_url))
+#     print("Berhasil ke halaman pengumuman '" + driver.current_url + "'")
+# except Exception as e:
+#     print("Gagal ke pengumuman. Halaman saat ini '" + driver.current_url + "'")
+#     print('Cek kembali username dan password - Menghentikan program...')
+
+
+# driver.quit()
