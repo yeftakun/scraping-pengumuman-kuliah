@@ -7,9 +7,25 @@
 pip install selenium requests python-dotenv webdriver-manager
 ```
 
-**Download chrome driver**
+**Driver**
+
+**Chrome (windows)**
 
 Download sesuai dengan versi chrome [disini](https://developer.chrome.com/docs/chromedriver/downloads) untuk chrome versi 115 keatas [disini](https://googlechromelabs.github.io/chrome-for-testing/), ekstrak dan taruh file exe di direktori utama.
+
+**Firefox (Termux)**
+
+```
+pkg install geckodriver
+pkg install which
+which geckodriver
+```
+Copy path geckodriver dan taruh di `app2.py`
+
+```
+pkg install x11-repo
+pkg install firefox
+```
 
 **Bot telegram**
 
